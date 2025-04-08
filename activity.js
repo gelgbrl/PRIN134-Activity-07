@@ -80,3 +80,54 @@ function runGame() {
 
 // Run the game
 runGame();
+
+
+const app = document.getElementById('app');
+
+const container = document.createElement('div');
+container.id = 'main';
+container.classList.add('container');
+app.append(container);
+
+const header = document.createElement('h3');
+header.textContent = 'NAME';
+container.append(header);
+
+
+const playerName = document.createElement('h4');
+playerName.id = 'players';
+playerName.classList.add('players-group', 'pt-3', 'pb-2');
+container.append(playerName);
+
+const playerText = document.createElement('h3');
+playerText.textContent = 'PLAYERS';
+container.append(playerText)
+
+const playerControls = document.createElement('div'); 
+playerControls.id = 'player-controls';
+playerControls.classList.add('input-group');
+document.getElementById('players').before(playerControls);
+
+const playersInput = document.createElement('input');
+playersInput.type = 'text';
+playersInput.id = 'player-input';
+playersInput.classList.add('input-players');
+playerControls.append(playersInput); 
+
+const playersNameButton = document.createElement('button');
+playersNameButton.id = 'btn-name';
+playersNameButton.classList.add('btn', 'btn-outline-primary');
+playersNameButton.textContent = 'Add';
+playersNameButton.addEventListener('click', () => {
+    let playersInput = document.getElementById('player-input');
+    let playerName = document.getElementById('players');
+
+    let newItem = document.createElement('h4');
+    newItem.classList.add('list-group-item');
+    newItem.textContent = " " + playersInput.value; 
+
+    playerName.append(newItem);
+    playersInput.value = '';
+}) 
+
+playerControls.append(playersNameButton);
