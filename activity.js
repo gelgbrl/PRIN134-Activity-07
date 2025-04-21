@@ -1,133 +1,176 @@
 class Player {
     constructor(name) {
-        this.name = name;
-        this.score = 0;
+      this.name = name;
+      this.score = 0;
     }
-}
-
-function calculateSuccessRate() {
-    return Math.random(); 
-}
-
-function shootBall(player, attempts) {
+  }
+  
+  function calculateSuccessRate() {
+    return Math.random();
+  }
+  
+  function shootBall(player, attempts) {
     let successfulShots = 0;
     for (let i = 0; i < attempts; i++) {
-        if (calculateSuccessRate() > 0.5) { 
-            player.score += 1;
-            successfulShots += 1;
-        }
+      if (calculateSuccessRate() > 0.5) {
+        player.score += 1;
+        successfulShots += 1;
+      }
     }
-    return successfulShots; 
-}
-
-function rankPlayers(players) {
+    return successfulShots;
+  }
+  
+  function rankPlayers(players) {
     return players.sort((a, b) => b.score - a.score);
-}
-
-function tieBreaker(players, attempts, roundNumber) {
-    console.log(`\n${String.fromCodePoint(127936)} Round ${roundNumber} begins! ${String.fromCodePoint(127936)}`);
-
+  }
+  
+  function tieBreaker(players, attempts, roundNumber) {
     players.forEach(player => player.score = 0);
-
-    players.forEach(player => {
-        const successfulShots = shootBall(player, attempts);
-        console.log(`${player.name} made ${successfulShots} successful shots this round.`);
-    });
-
-    const rankedPlayers = rankPlayers(players);
-    console.log(`\n${String.fromCodePoint(127942)} Ranking after this round: ${String.fromCodePoint(127942)}`);
-    rankedPlayers.forEach((player, index) => {
-        console.log(`${index + 1}. ${player.name} - Score: ${player.score}`);
-    });
-
-    return rankedPlayers; 
-}
-
-function runGame() {
-    const players = [
-        new Player("Seju"),
-        new Player("Sumin"),
-        new Player("Sungji"),
-        new Player("Nami"),
-        new Player("Kim")
-    ];
-
-    const attempts = 10; 
-
     players.forEach(player => shootBall(player, attempts));
-
-    let rankedPlayers = rankPlayers(players);
-
-    console.log(`${String.fromCodePoint(127941)} Ranking after this round: ${String.fromCodePoint(127941)}`);
-    rankedPlayers.forEach((player, index) => {
-        console.log(`${index + 1}. ${player.name} - Score: ${player.score}`);
+    return rankPlayers(players);
+  }
+  
+  // DOM Setup
+  const app = document.getElementById('app');
+  
+  const container = document.createElement('div');
+  container.classList.add('container');
+  app.append(container);
+  
+  const header = document.createElement('h2');
+  header.textContent = 'Basketball Game';
+  container.append(header);
+  
+  const subHeader = document.createElement('h3');
+  subHeader.textContent = 'Add Players';
+  container.append(subHeader);
+  
+  const playerControls = document.createElement('div');
+  container.append(playerControls);
+  
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Enter player name';
+  playerControls.append(input);
+  
+  const addButton = document.createElement('button');
+  addButton.textContent = 'Add';
+  playerControls.append(addButton);
+  
+  const playerList = document.createElement('div');
+  playerList.classList.add('mt-3');
+  container.append(playerList);
+  
+  const startButton = document.createElement('button');
+  startButton.textContent = 'Start Game';
+  startButton.classList.add('mt-3');
+  container.append(startButton);
+  
+  const resultsContainer = document.createElement('div');
+  resultsContainer.id = 'results';
+  resultsContainer.classList.add('mt-4');
+  container.append(resultsContainer);
+  
+  const players = [];
+  
+  function renderPlayers() {
+    playerList.innerHTML = '';
+    players.forEach((player, index) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.display = 'flex';
+      wrapper.style.alignItems = 'center';
+      wrapper.style.marginBottom = '8px';
+      wrapper.style.gap = '10px';
+  
+      const nameLabel = document.createElement('span');
+      nameLabel.textContent = player.name;
+  
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Remove';
+      removeBtn.style.fontSize = '12px'; 
+      removeBtn.style.padding = '4px 8px'; 
+      removeBtn.style.fontWeight = 'bold'; 
+      removeBtn.style.cursor = 'pointer';
+      removeBtn.style.backgroundColor = 'red'; 
+      removeBtn.style.color = 'white'; 
+      removeBtn.style.border = 'none'; 
+      removeBtn.style.borderRadius = '4px'; 
+      removeBtn.addEventListener('click', () => {
+        players.splice(index, 1);
+        renderPlayers();
+      });
+  
+      wrapper.append(nameLabel, removeBtn);
+      playerList.append(wrapper);
     });
-
-    let topScore = rankedPlayers[0].score;
-    let tiedWinners = rankedPlayers.filter(player => player.score === topScore);
-
-    let roundNumber = 2;
-    while (tiedWinners.length > 1) {
-        console.log(`\nTiebreaker needed between: ${tiedWinners.map(player => player.name).join(", ")}`);
-        tiedWinners = tieBreaker(tiedWinners, attempts, roundNumber);
-        topScore = tiedWinners[0].score;
-        tiedWinners = tiedWinners.filter(player => player.score === topScore);
-        roundNumber++;
+  }
+  
+  addButton.addEventListener('click', () => {
+    const name = input.value.trim();
+    if (name) {
+      const player = new Player(name);
+      players.push(player);
+      renderPlayers();
+      input.value = '';
     }
-
-    console.log(`\n${String.fromCodePoint(129351)} The winner is: ${tiedWinners[0].name} with ${tiedWinners[0].score} points ${String.fromCodePoint(129351)}`);
-}
-
-// Run the game
-runGame();
-
-
-const app = document.getElementById('app');
-
-const container = document.createElement('div');
-container.id = 'main';
-container.classList.add('container');
-app.append(container);
-
-const header = document.createElement('h3');
-header.textContent = 'NAME';
-container.append(header);
-
-
-const playerName = document.createElement('h4');
-playerName.id = 'players';
-playerName.classList.add('players-group', 'pt-3', 'pb-2');
-container.append(playerName);
-
-const playerText = document.createElement('h3');
-playerText.textContent = 'PLAYERS';
-container.append(playerText)
-
-const playerControls = document.createElement('div'); 
-playerControls.id = 'player-controls';
-playerControls.classList.add('input-group');
-document.getElementById('players').before(playerControls);
-
-const playersInput = document.createElement('input');
-playersInput.type = 'text';
-playersInput.id = 'player-input';
-playersInput.classList.add('input-players');
-playerControls.append(playersInput); 
-
-const playersNameButton = document.createElement('button');
-playersNameButton.id = 'btn-name';
-playersNameButton.classList.add('btn', 'btn-outline-primary');
-playersNameButton.textContent = 'Add';
-playersNameButton.addEventListener('click', () => {
-    let playersInput = document.getElementById('player-input');
-    let playerName = document.getElementById('players');
-
-    let newItem = document.createElement('h4');
-    newItem.classList.add('list-group-item');
-    newItem.textContent = " " + playersInput.value; 
-
-    playerName.append(newItem);
-    playersInput.value = '';
-}) 
-
-playerControls.append(playersNameButton);
+  });
+  
+  startButton.addEventListener('click', () => {
+    if (players.length < 2) {
+      alert("Add at least 2 players to start the game.");
+      return;
+    }
+  
+    resultsContainer.innerHTML = '';
+    const attempts = 10;
+  
+    players.forEach(player => {
+      player.score = 0;
+      shootBall(player, attempts);
+    });
+  
+    let ranked = rankPlayers([...players]);
+  
+    const resultsTitle = document.createElement('h4');
+    resultsTitle.textContent = "Game Results:";
+    resultsContainer.append(resultsTitle);
+  
+    ranked.forEach((player, index) => {
+      const line = document.createElement('p');
+      line.textContent = `${index + 1}. ${player.name} - ${player.score} points`;
+      resultsContainer.append(line);
+    });
+  
+    let topScore = ranked[0].score;
+    let tied = ranked.filter(p => p.score === topScore);
+    let round = 2;
+    const maxRounds = 3;
+  
+  
+    while (tied.length > 1 && round <= maxRounds) {
+      const roundHeader = document.createElement('h4');
+      roundHeader.textContent = `Tiebreaker Round ${round}`;
+      resultsContainer.append(roundHeader);
+  
+      tied = tieBreaker(tied, attempts, round);
+  
+      const roundResults = document.createElement('p');
+      roundResults.textContent = `Results after Round ${round}:`;
+      resultsContainer.append(roundResults);
+  
+      tied.forEach((player, index) => {
+        const line = document.createElement('p');
+        line.textContent = `${index + 1}. ${player.name} - ${player.score} points`;
+        resultsContainer.append(line);
+      });
+  
+      topScore = tied[0].score;
+      tied = tied.filter(p => p.score === topScore);
+      round++;
+    }
+  
+    const winner = document.createElement('h3');
+    winner.innerHTML = `Winner: <strong>${tied[0].name}</strong> with <strong>${tied[0].score}</strong> points!`;
+    resultsContainer.append(winner);
+  });
+  
